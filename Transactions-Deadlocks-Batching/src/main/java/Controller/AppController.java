@@ -170,8 +170,8 @@ public class AppController {
             errorLabel.setText("");
         });
         Double timeAuto = serviceApp.StrategyAutoCommit();
-        Double timeBatch = serviceApp.StrategyBatchCommit();
-        Double timeAll = serviceApp.StrategyAllCommit();
+        Double timeBatch = serviceApp.StrategyPartialCommit();
+        Double timeAll = serviceApp.StrategyBatchCommit();
 
         Platform.runLater(() -> {
             barChart.getData().clear();
@@ -185,8 +185,8 @@ public class AppController {
             series.setName("Processing Time");
 
             series.getData().add(new XYChart.Data<>("Auto Commit", timeAuto));
-            series.getData().add(new XYChart.Data<>("Batch Commit", timeBatch));
-            series.getData().add(new XYChart.Data<>("All Commit", timeAll));
+            series.getData().add(new XYChart.Data<>("Partial Commit", timeBatch));
+            series.getData().add(new XYChart.Data<>("Batch Commit", timeAll));
 
             barChart.getData().add(series);
         });

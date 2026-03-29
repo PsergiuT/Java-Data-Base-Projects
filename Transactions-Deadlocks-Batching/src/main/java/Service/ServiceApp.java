@@ -78,7 +78,7 @@ public class ServiceApp {
         new Thread(() -> {
             try(Connection conn = DbConnection.getConnection()){
                 trs1.accept("[A] Begin Transaction");
-                conn.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+                conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 
                 Employee emp = repo.select(conn);
                 trs1.accept("[A] Read 1 salary value: " + emp.getSalary());
@@ -102,7 +102,7 @@ public class ServiceApp {
         new Thread(() -> {
             try(Connection conn = DbConnection.getConnection()){
                 trs2.accept("[B] Begin Transaction");
-                conn.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+                conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 
                 repo.update(conn, 1L,12000);
                 trs2.accept("[B] Updated users salary to 12000");
@@ -181,7 +181,7 @@ public class ServiceApp {
                 Thread.sleep(3000);
 
                 repo.update(conn, 1L,salary);
-                trs1.accept("[A] Updated salary value: " + emp.getSalary());
+                trs1.accept("[A] Updated salary value: " + salary);
 
                 conn.commit();
                 trs1.accept("[A] Transaction Commited");
@@ -204,7 +204,7 @@ public class ServiceApp {
                 salary += 500;
 
                 repo.update(conn, 1L,salary);
-                trs2.accept("[B] Updated salary value: " + emp.getSalary());
+                trs2.accept("[B] Updated salary value: " + salary);
 
                 conn.commit();
                 trs2.accept("[B] Transaction Commited");
@@ -323,7 +323,7 @@ public class ServiceApp {
 
 
     private void clearTable(){
-        logger.traceEntry();
+        //logger.traceEntry();
         try(Connection conn = DbConnection.getConnection()){
             try(PreparedStatement pstmt = conn.prepareStatement("DELETE FROM employees")){
                 pstmt.executeUpdate();
@@ -336,7 +336,7 @@ public class ServiceApp {
 
 
     public Double StrategyAutoCommit() {
-        logger.traceEntry();
+        //logger.traceEntry();
         clearTable();
         try (Connection conn = DbConnection.getConnection()) {
             String sql = "insert into batch_employees (name) values (?)";
@@ -344,7 +344,7 @@ public class ServiceApp {
 
             Long start = System.nanoTime();
             try(PreparedStatement pstmt = conn.prepareStatement(sql)){
-                for (int i = 0; i < 5000; i++) {
+                for (int i = 1; i <= 5000; i++) {
                     pstmt.setString(1, "Employee" + i);
                     pstmt.executeUpdate();
                 }
@@ -352,7 +352,7 @@ public class ServiceApp {
             Long end = System.nanoTime();
             Double time = (end - start) / 1_000_000.0;
 
-            logger.info("Time: {}", time);
+            logger.info("Time Auto Commit: {}", time);
             return time;
         }
         catch (SQLException e){
@@ -363,15 +363,16 @@ public class ServiceApp {
 
 
 
-    public Double StrategyBatchCommit() {
-        logger.traceEntry();
+    public Double StrategyPartialCommit() {
+        //logger.traceEntry();
         clearTable();
         try (Connection conn = DbConnection.getConnection()) {
+            conn.setAutoCommit(false);
             String sql = "insert into batch_employees (name) values (?)";
 
             Long start = System.nanoTime();
             try(PreparedStatement pstmt = conn.prepareStatement(sql)){
-                for (int i = 0; i < 5000; i++) {
+                for (int i = 1; i <= 5000; i++) {
                     pstmt.setString(1, "Employee" + i);
                     pstmt.executeUpdate();
 
@@ -384,7 +385,7 @@ public class ServiceApp {
             Long end = System.nanoTime();
             Double time = (end - start) / 1_000_000.0;
 
-            logger.info("Time: {}", time);
+            logger.info("Time Partial Commit: {}", time);
             return time;
         }
         catch (SQLException e){
@@ -395,15 +396,16 @@ public class ServiceApp {
 
 
 
-    public Double StrategyAllCommit() {
-        logger.traceEntry();
+    public Double StrategyBatchCommit() {
+        //logger.traceEntry();
         clearTable();
         try (Connection conn = DbConnection.getConnection()) {
+            conn.setAutoCommit(false);
             String sql = "insert into batch_employees (name) values (?)";
 
             Long start = System.nanoTime();
             try(PreparedStatement pstmt = conn.prepareStatement(sql)){
-                for (int i = 0; i < 5000; i++) {
+                for (int i = 1; i <= 5000; i++) {
                     pstmt.setString(1, "Employee" + i);
                     pstmt.addBatch();
 
@@ -416,7 +418,7 @@ public class ServiceApp {
             Long end = System.nanoTime();
             Double time = (end - start) / 1_000_000.0;
 
-            logger.info("Time: {}", time);
+            logger.info("Time Batch Commit: {}", time);
             return time;
         }
         catch (SQLException e){

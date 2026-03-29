@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="TRACE">
     <Appenders>
-        <File name="FisierLog" fileName="lab2/logs/app.log" append="false">
+        <File name="FisierLog" fileName="Transactions-Deadlocks-Batching/logs/app.log" append="false">
             <PatternLayout
                     disableAnsi="false"
                     pattern="%d{HH:mm:ss.SSS} %highlight{%-5p} [%t] %style{%C{1}.%M(%L)}{cyan} - %m%n"/>
