@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence" version="3.0">
+    <persistence-unit name="orm">
+        <!-- Entity classes -->
+        <class>Domain.Customer</class>
+        <class>Domain.Order</class>
+        <class>Domain.Product</class>
+        <class>Domain.OrderProduct</class>
+        <class>Domain.Employee</class>
+        <properties>
+            <!-- Database connection -->
+            <!-- Hibernate settings -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+            <property name="hibernate.show_sql" value="false"/>  <!-- this was modified -->
+            <property name="hibernate.format_sql" value="true"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+
+            <property name="hibernate.jdbc.batch_size" value="50"/>
+            <property name="hibernate.order_inserts" value="true"/>
+
+        </properties>
+    </persistence-unit></persistence>
