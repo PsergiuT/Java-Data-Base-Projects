@@ -28,12 +28,27 @@ In this section my main focus was to showcase the importance of using indexes. W
     <img src="assets/BenchmarkIndex.png" width="60%" height="60%" alt=" ">
 </div>
 
+
 | Search criteria                              | No Index (ms) | With Index (ms) | Decrease(%) |
 |:---------------------------------------------|:-------------:|:---------------:|:-----------:|
 | Email (email = `emp159735@gmail.com`)        |    669.24     |     468.06      |   30.06%    |
 | Department ID (department_id = `5`)          |     86.67     |      57.89      |   33.20%    |
 | Salary range (salary = `50k - 60k`)          |    132.34     |      49.08      |   62.91%    |
 | 2 columns (dept_id = `5` & salary > `50000)` |    147.53     |      32.94      |   77.67%    |
+
+
+
+NOTE: The results are not so drastic because the dataset used isn't very big (40 MB) and the rows are cached inside the RAM, so event without an index the search is very fast. 
+
+#### Here is the generated and actual query plan:
+<div align="center">
+    <h3><strong>Results using indexes:</strong></h3>
+    <img src="assets/ExplainAnalyzeIndex.png" width="60%" height="60%" alt=" ">
+    <h3><strong>Results without indexes:</strong></h3>
+    <img src="assets/ExplainAnalyzeNoIndex.png" width="70%" height="60%" alt=" ">
+</div>
+
+
 
 
 ## Paging (Limit/Offset and Keyset)
@@ -99,4 +114,13 @@ By avoiding creating an extra of 1000 queries that need to parse, validate and t
     <img src="assets/StatementReusing.png" width="30%" height="60%" alt=" ">
 </div>
 
+
+
+## Optimal Connection Pool Configuration
+
+Setting up the connection pool number of threads ((core_count * 2) + effective_spindle_count) for the best performance. Using env variables to set the url, username and password for the database.
+
+<div align="center">
+    <img src="assets/configs.png" width="65%" height="60%" alt=" ">
+</div>
 

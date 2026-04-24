@@ -25,7 +25,13 @@ public class JPAUtilPoolConnection {
             config.setDriverClassName(properties.getProperty("db.driver"));
             config.setConnectionTimeout(1000);
             config.setMaxLifetime(10000);
-            config.setMaximumPoolSize(10);
+            config.setMaximumPoolSize(10);              // ((core_count * 2) + effective_spindle_count)
+                                                        // (2 * core_count) <- ensures that all cores are used and that the CPU
+                                                        //                      is not overwhelmed with a lot of context switches.
+                                                        // effective_spindle_count <- how many I/O requests can the disk handle concurrently.
+                                                        //                  these threads are blocked waiting for the disk response.
+            config.setMinimumIdle(5);
+            config.setConnectionTestQuery("SELECT 1");
 
             dataSource = new HikariDataSource(config);
 
